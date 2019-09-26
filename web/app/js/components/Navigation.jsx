@@ -346,6 +346,7 @@ class NavigationBase extends React.Component {
       <MenuItem
         component={Link}
         onClick={onClick}
+        id={`${title.toLowerCase()}-button`}
         to={api.prefixLink(path)}
         className={classes.navMenuItem}
         selected={isCurrentPage(path)}>
@@ -376,7 +377,7 @@ class NavigationBase extends React.Component {
       <div className={classes.root}>
         <AppBar
           className={classNames(classes.appBar, {[classes.appBarShift]: drawerOpen} )}>
-          <Toolbar>
+          <Toolbar id="toolbar">
             <Typography variant="h6" color="inherit" noWrap>
               { !drawerOpen &&
               <IconButton className={classes.toggleDrawerButton}>
@@ -422,6 +423,7 @@ class NavigationBase extends React.Component {
 
           <MenuList>
             <Button
+              id="namespace-selection-button"
               variant="contained"
               className={classes.namespaceChangeButton}
               size="large"
@@ -436,6 +438,7 @@ class NavigationBase extends React.Component {
               onClose={this.handleNamespaceMenuClick}>
               <MenuItem
                 value="all"
+                id="_all-namespace-option"
                 onClick={() => this.handleNamespaceChange("_all")}>
                   All Namespaces
               </MenuItem>
@@ -444,6 +447,7 @@ class NavigationBase extends React.Component {
 
               {namespaces.map(ns => (
                 <MenuItem
+                  id={`${ns.name}-namespace-option`}
                   onClick={() => this.handleNamespaceChange(ns.name)}
                   key={ns.name}>
                   {ns.name}
@@ -463,10 +467,10 @@ class NavigationBase extends React.Component {
                 </DialogContentText>
               </DialogContent>
               <DialogActions>
-                <Button onClick={this.handleConfirmNamespaceChange} color="primary">
+                <Button id="confirm-namespace-change" onClick={this.handleConfirmNamespaceChange} color="primary">
                     Yes
                 </Button>
-                <Button onClick={this.handleDialogCancel} variant="text">
+                <Button id="cancel-namespace-change" onClick={this.handleDialogCancel} variant="text">
                   No
                 </Button>
               </DialogActions>

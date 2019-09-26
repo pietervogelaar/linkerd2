@@ -193,7 +193,7 @@ class BaseTable extends React.Component {
               sortedTableRows.map(d => {
               let key = !rowKey ? d.key : rowKey(d);
               let tableRow = (
-                <TableRow key={key}>
+                <TableRow key={key} id={`${d.name}-row`}>
                   { tableColumns.map(c => (
                     <TableCell
                       className={classNames({[classes.denseTable]: padding === 'dense'})}
