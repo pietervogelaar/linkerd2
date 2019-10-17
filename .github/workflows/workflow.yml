@@ -98,6 +98,21 @@ jobs:
         echo "$GITCOOKIE_SH" | bash
         bin/lint --verbose
 
+  go_fmt:
+    name: Go Format
+    runs-on: ubuntu-18.04
+    container:
+      image: golang:1.12.9
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Format
+      env:
+        GITCOOKIE_SH: ${{ secrets.GITCOOKIE_SH }}
+      run: |
+        echo "$GITCOOKIE_SH" | bash
+        bin/fmt
+
   js_unit_tests:
     name: JS unit tests
     runs-on: ubuntu-18.04
@@ -516,15 +531,16 @@ jobs:
           set_gcloud_config "$GCP_PROJECT" "$GCP_ZONE" "$GKE_CLUSTER"
         )
         . "$dir/path.bash.inc"
-    - name: Helm chart creation
-      if: startsWith(github.ref, 'refs/tags')
-      run: |
-        bin/helm-build package
-    - name: Edge Helm chart upload
+        mkdir -p target/helm
+    - name: Edge Helm chart creation and upload
       if: startsWith(github.ref, 'refs/tags/edge')
       run: |
+        gsutil cp gs://helm.linkerd.io/edge/index.yaml target/helm/index-pre.yaml
+        bin/helm-build package
         gsutil rsync target/helm gs://helm.linkerd.io/edge
-    - name: Stable Helm chart upload
+    - name: Stable Helm chart creation and upload
       if: startsWith(github.ref, 'refs/tags/stable')
       run: |
+        gsutil cp gs://helm.linkerd.io/stable/index.yaml target/helm/index-pre.yaml
+        bin/helm-build package
         gsutil rsync target/helm gs://helm.linkerd.io/stable
