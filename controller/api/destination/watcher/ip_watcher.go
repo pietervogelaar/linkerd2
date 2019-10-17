@@ -69,6 +69,9 @@ func NewIPWatcher(k8sAPI *k8s.API, endpoints *EndpointsWatcher, log *logging.Ent
 	k8sAPI.Pod().Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc:    iw.addPod,
 		DeleteFunc: iw.deletePod,
+		UpdateFunc: func(_ interface{}, obj interface{}) {
+			iw.addPod(obj)
+		},
 	})
 
 	return iw
@@ -124,6 +127,10 @@ func (iw *IPWatcher) deleteService(obj interface{}) {
 func (iw *IPWatcher) addPod(obj interface{}) {
 	pod := obj.(*corev1.Pod)
 	if pod.Namespace == kubeSystem {
+		return
+	}
+	if pod.Status.PodIP == "" {
+		// Pod has not yet been assigned an IP address.
 		return
 	}
 	ss := iw.getOrNewServiceSubscriptions(pod.Status.PodIP)
