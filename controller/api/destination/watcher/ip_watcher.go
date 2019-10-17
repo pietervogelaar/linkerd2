@@ -135,7 +135,7 @@ func (iw *IPWatcher) addPod(obj interface{}) {
 	}
 	ss := iw.getOrNewServiceSubscriptions(pod.Status.PodIP)
 
-	ownerKind, ownerName := iw.k8sAPI.GetOwnerKindAndName(pod, false)
+	ownerKind, ownerName := iw.k8sAPI.GetOwnerKindAndName(pod, true)
 	podSet := PodSet{
 		Pods: map[PodID]Address{
 			PodID{
@@ -204,7 +204,7 @@ func (iw *IPWatcher) getOrNewServiceSubscriptions(clusterIP string) *serviceSubs
 			}
 			if len(objs) == 1 {
 				if pod, ok := objs[0].(*corev1.Pod); ok {
-					ownerKind, ownerName := iw.k8sAPI.GetOwnerKindAndName(pod, false)
+					ownerKind, ownerName := iw.k8sAPI.GetOwnerKindAndName(pod, true)
 					ss.pod = PodSet{
 						Pods: map[PodID]Address{
 							PodID{
