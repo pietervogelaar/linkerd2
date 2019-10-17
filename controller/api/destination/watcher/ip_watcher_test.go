@@ -102,6 +102,7 @@ status:
 				"172.17.0.12:8989",
 				"172.17.0.19:8989",
 				"172.17.0.20:8989",
+				"172.17.0.21:8989",
 			},
 			expectedNoEndpoints:              false,
 			expectedNoEndpointsServiceExists: false,
@@ -341,6 +342,54 @@ spec:
 			port:                             5959,
 			expectedAddresses:                []string{},
 			expectedNoEndpoints:              true,
+			expectedNoEndpointsServiceExists: false,
+			expectedError:                    false,
+		},
+		{
+			serviceType: "pod ip",
+			k8sConfigs: []string{`
+apiVersion: v1
+kind: Pod
+metadata:
+  name: name1-1
+  namespace: ns
+  ownerReferences:
+  - kind: ReplicaSet
+    name: rs-1
+status:
+  phase: Running
+  podIP: 172.17.0.12`,
+				`
+apiVersion: v1
+kind: Pod
+metadata:
+  name: name1-2
+  namespace: ns
+  ownerReferences:
+  - kind: ReplicaSet
+    name: rs-1
+status:
+  phase: Running
+  podIP: 172.17.0.19`,
+				`
+apiVersion: v1
+kind: Pod
+metadata:
+  name: name1-3
+  namespace: ns
+  ownerReferences:
+  - kind: ReplicaSet
+    name: rs-1
+status:
+  phase: Running
+  podIP: 172.17.0.20`,
+			},
+			host: "172.17.0.12",
+			port: 8989,
+			expectedAddresses: []string{
+				"172.17.0.12:8989",
+			},
+			expectedNoEndpoints:              false,
 			expectedNoEndpointsServiceExists: false,
 			expectedError:                    false,
 		},
