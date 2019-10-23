@@ -252,7 +252,11 @@ func (ss *serviceSubscriptions) updateService(service *corev1.Service) {
 	if id != ss.service {
 		for listener, port := range ss.listeners {
 			ss.endpoints.Unsubscribe(ss.service, port, "", listener)
-			ss.endpoints.Subscribe(id, port, "", listener)
+			err := ss.endpoints.Subscribe(id, port, "", listener)
+			if err != nil {
+				ss.log.Warnf("failed to subscribe to %s: %s", id, err)
+				listener.NoEndpoints(false)
+			}
 		}
 		ss.service = id
 		ss.pod = PodSet{}
